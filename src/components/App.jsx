@@ -1,22 +1,31 @@
 import React, { Component } from 'react';
-import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
+import Searchbar from './Searchbar';
 import Container from './Container';
 import Modal from './Modal';
 
 class App extends Component {
   state = {
     isShow: false,
-    searchQuery: '',
-    imgInfo: [],
+    tag: '',
+    largeImg: '',
+  };
+
+  onToggle = () => {
+    this.setState(prevState => ({ isShow: !prevState.isShow }));
   };
 
   handleFormSubmit = searchQuery => {
     this.setState({ searchQuery: searchQuery });
   };
 
-  onToggle = () => {
-    this.setState(prevState => ({ isShow: !prevState.isShow }));
+  onClickImg = e => {
+    const tag = e.target.alt;
+    const largeImg = e.target.dataset.source;
+
+    this.setState({ tag, largeImg });
+
+    this.onToggle();
   };
 
   render() {
@@ -26,12 +35,12 @@ class App extends Component {
 
         <ImageGallery
           searchQuery={this.state.searchQuery}
-          onClickImg={this.onToggle}
+          onClickImg={this.onClickImg}
         />
 
         {this.state.isShow && (
           <Modal onClose={this.onToggle}>
-            <img src="" alt="" />
+            <img src={this.state.largeImg} alt={this.state.tag} />
           </Modal>
         )}
       </Container>

@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Button = ({ onToggle }) => {
+const Button = ({ loadMore }) => {
   return (
-    <button type="button" onClick={onToggle}>
-      Показать
+    <button type="button" onClick={loadMore}>
+      Load more
     </button>
   );
 };
 
 Button.propTypes = {
-  onToggle: PropTypes.func.isRequired,
+  loadMore: PropTypes.func.isRequired,
 };
 
 export default Button;

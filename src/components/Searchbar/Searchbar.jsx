@@ -15,7 +15,7 @@ class Searchbar extends Component {
     e.preventDefault();
 
     if (this.state.searchQuery.trim() === '') {
-      console.log('Ввели пустую строку');
+      alert('Ввели пустую строку');
       return;
     }
 
