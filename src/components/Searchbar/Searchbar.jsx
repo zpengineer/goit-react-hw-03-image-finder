@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+// import { toast } from 'react-toastify';
+import { BsSearch } from 'react-icons/bs';
 import PropTypes from 'prop-types';
 import styles from './Searchbar.module.css';
 
@@ -15,12 +17,20 @@ class Searchbar extends Component {
     e.preventDefault();
 
     if (this.state.searchQuery.trim() === '') {
-      alert('Ввели пустую строку');
+      // toast.error("Oops! Entered an empty string",
+      //   {
+      //     position: "bottom-right",
+      //     autoClose: 5000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
       return;
     }
 
     this.props.onSubmit(this.state.searchQuery);
-    this.setState({ searchQuery: ' ' });
   };
 
   handleSearchQuery = e => {
@@ -29,14 +39,16 @@ class Searchbar extends Component {
 
   render() {
     return (
-      <header className={styles.searchbar}>
+      <header className={styles.searchbar} id="header">
         <form className={styles.form}>
           <button
             type="submit"
             className={styles.button}
             onClick={this.handleSubmit}
           >
-            <span className={styles.label}>Search</span>
+            <span className={styles.label}>
+              <BsSearch size={24} />
+            </span>
           </button>
 
           <input
@@ -45,8 +57,8 @@ class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             name="searchQuery"
-            value={this.state.searchQuery}
             placeholder="Search images and photos"
+            value={this.state.searchQuery}
             onChange={this.handleSearchQuery}
           />
         </form>

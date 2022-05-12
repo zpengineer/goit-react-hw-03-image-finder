@@ -6,6 +6,7 @@ const ImageGalleryItem = ({ smallImage, largeImage, tags, onClickImg }) => {
   return (
     <li className={styles.galleryItem}>
       <img
+        id="img-item"
         className={styles.img}
         src={smallImage}
         data-source={largeImage}
@@ -18,6 +19,7 @@ const ImageGalleryItem = ({ smallImage, largeImage, tags, onClickImg }) => {
 
 ImageGalleryItem.propTypes = {
   smallImage: PropTypes.string.isRequired,
+  largeImage: PropTypes.string.isRequired,
   tags: PropTypes.string.isRequired,
   onClickImg: PropTypes.func.isRequired,
 };
