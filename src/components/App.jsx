@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import pixabayAPI from './services/pixabay-api';
 import ImageGallery from './ImageGallery';
 import Searchbar from './Searchbar';
@@ -15,7 +17,6 @@ class App extends Component {
     searchQuery: '',
     serchResult: [],
     page: 1,
-    error: null,
     status: 'idle',
     currentImgTag: '',
     currentLargeImg: '',
@@ -23,33 +24,60 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
-      this.setState({ status: 'pending', serchResult: [] });
-
-      this.fetchImges();
+      this.fetchImages();
     }
   }
 
   componentDidMount() {
     this.pageHeader();
-    this.scrollOnLoadButton();
   }
 
-  fetchImges = () => {
-    pixabayAPI(this.state.searchQuery, this.state.page)
-      .then(({ hits }) => {
-        this.setState(prevState => ({
-          serchResult: [...prevState.serchResult, ...hits],
-          page: prevState.page + 1,
-          status: 'resolved',
-        }));
+  fetchImages = async () => {
+    try {
+      this.setState({ status: 'pending' });
 
-        if (this.state.page !== 1) console.log(this.scrollOnLoadButton);
-
-        if (this.state.serchResult.length === 0) {
-          console.log('Ошибка текст не найден');
+      await pixabayAPI(this.state.searchQuery, this.state.page).then(res => {
+        if (res.data.hits.length === 0) {
+          toast.error(
+            'Sorry, there are no images matching your search query. Please try again.',
+            {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            }
+          );
+        } else {
+          this.setState(prevState => ({
+            serchResult: [...prevState.serchResult, ...res.data.hits],
+            page: prevState.page + 1,
+          }));
         }
-      })
-      .catch(error => this.setState({ error, status: 'pending' }));
+      });
+    } catch (error) {
+      console.log(error);
+
+      toast.warn("We're sorry, but you've reached the end of search results.", {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } finally {
+      this.setState({ status: 'resolved' });
+
+      if (this.state.page > 1) {
+        console.log(document.documentElement.scrollHeight);
+
+        setTimeout(this.smoothScroll, 250);
+      }
+    }
   };
 
   onToggle = () => {
@@ -57,7 +85,7 @@ class App extends Component {
   };
 
   handleFormSubmit = searchQuery => {
-    this.setState({ searchQuery, page: 1 });
+    this.setState({ searchQuery, page: 1, serchResult: [] });
   };
 
   onClickImg = e => {
@@ -77,9 +105,11 @@ class App extends Component {
     document.body.style.paddingTop = `${pageHeaderHeight}px`;
   };
 
-  scrollOnLoadButton = () => {
+  smoothScroll = () => {
+    let scrollHeight = document.documentElement.scrollHeight;
+
     window.scrollTo({
-      top: document.documentElement.scrollHeight,
+      top: scrollHeight,
       behavior: 'smooth',
     });
   };
@@ -93,19 +123,23 @@ class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
 
         {status === 'idle' && (
-          <div className={styles.notification}>Search images and photos</div>
+          <div className={styles.notification}>
+            Gallery is empty, search for images.
+          </div>
         )}
 
         {status === 'pending' && <Loader />}
 
-        {status === 'resolved' && (
+        {serchResult.length > 0 && (
           <ImageGallery
             serchResult={serchResult}
             onClickImg={this.onClickImg}
           />
         )}
 
-        {serchResult.length > 0 && <Button loadMore={this.fetchImges} />}
+        {serchResult.length > 0 && status === 'resolved' && (
+          <Button loadMore={this.fetchImages} />
+        )}
 
         {isShow && (
           <Modal onClose={this.onToggle}>
