@@ -19,7 +19,7 @@ class Searchbar extends Component {
     if (this.state.searchQuery.trim() === '') {
       toast.error('Oops! Entered an empty string', {
         position: 'top-right',
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

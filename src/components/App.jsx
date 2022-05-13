@@ -3,6 +3,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import pixabayAPI from './services/pixabay-api';
+import { mapper } from './services/mapper';
+
 import ImageGallery from './ImageGallery';
 import Searchbar from './Searchbar';
 import Button from './Button';
@@ -33,16 +35,21 @@ class App extends Component {
   }
 
   fetchImages = async () => {
+    const { searchQuery, page } = this.state;
+
     try {
       this.setState({ status: 'pending' });
 
-      await pixabayAPI(this.state.searchQuery, this.state.page).then(res => {
-        if (res.data.hits.length === 0) {
+      await pixabayAPI(searchQuery, page).then(res => {
+        let getData = res.data.hits;
+        let mapData = mapper(getData);
+
+        if (mapData.length === 0) {
           toast.error(
             'Sorry, there are no images matching your search query. Please try again.',
             {
               position: 'top-right',
-              autoClose: 5000,
+              autoClose: 3000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
@@ -52,7 +59,7 @@ class App extends Component {
           );
         } else {
           this.setState(prevState => ({
-            serchResult: [...prevState.serchResult, ...res.data.hits],
+            serchResult: [...prevState.serchResult, ...mapData],
             page: prevState.page + 1,
           }));
         }
@@ -60,7 +67,7 @@ class App extends Component {
     } catch (error) {
       toast.warn("We're sorry, but you've reached the end of search results.", {
         position: 'top-right',
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -70,7 +77,7 @@ class App extends Component {
     } finally {
       this.setState({ status: 'resolved' });
 
-      if (this.state.page > 1) {
+      if (page > 1) {
         setTimeout(this.smoothScroll, 250);
       }
     }
