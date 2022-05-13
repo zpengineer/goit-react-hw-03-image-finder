@@ -58,8 +58,6 @@ class App extends Component {
         }
       });
     } catch (error) {
-      console.log(error);
-
       toast.warn("We're sorry, but you've reached the end of search results.", {
         position: 'top-right',
         autoClose: 5000,
@@ -73,8 +71,6 @@ class App extends Component {
       this.setState({ status: 'resolved' });
 
       if (this.state.page > 1) {
-        console.log(document.documentElement.scrollHeight);
-
         setTimeout(this.smoothScroll, 250);
       }
     }
@@ -128,14 +124,14 @@ class App extends Component {
           </div>
         )}
 
-        {status === 'pending' && <Loader />}
-
         {serchResult.length > 0 && (
           <ImageGallery
             serchResult={serchResult}
             onClickImg={this.onClickImg}
           />
         )}
+
+        {status === 'pending' && <Loader />}
 
         {serchResult.length > 0 && status === 'resolved' && (
           <Button loadMore={this.fetchImages} />
