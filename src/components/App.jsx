@@ -25,7 +25,9 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
+    const { searchQuery, page } = this.state;
+
+    if (prevState.searchQuery !== searchQuery || prevState.page !== page) {
       this.fetchImages();
     }
   }
@@ -60,7 +62,6 @@ class App extends Component {
         } else {
           this.setState(prevState => ({
             serchResult: [...prevState.serchResult, ...mapData],
-            page: prevState.page + 1,
           }));
         }
       });
@@ -83,8 +84,16 @@ class App extends Component {
     }
   };
 
+  handleLoadMore = e => {
+    const { page } = this.state;
+
+    e.preventDefault();
+
+    this.setState({ page: page + 1 });
+  };
+
   onToggle = () => {
-    this.setState(prevState => ({ isShow: !prevState.isShow }));
+    this.setState(({ isShow }) => ({ isShow: !isShow }));
   };
 
   handleFormSubmit = searchQuery => {
@@ -141,13 +150,15 @@ class App extends Component {
         {status === 'pending' && <Loader />}
 
         {serchResult.length > 0 && status === 'resolved' && (
-          <Button loadMore={this.fetchImages} />
+          <Button loadMore={this.handleLoadMore} />
         )}
 
         {isShow && (
-          <Modal onClose={this.onToggle}>
-            <img src={currentLargeImg} alt={currentImgTag} />
-          </Modal>
+          <Modal
+            onClose={this.onToggle}
+            src={currentLargeImg}
+            alt={currentImgTag}
+          />
         )}
 
         <ToastContainer

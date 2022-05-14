@@ -7,7 +7,8 @@ const modalRoot = document.querySelector('#modal-root');
 
 class Modal extends Component {
   static props = {
-    children: PropTypes.node.isRequired,
+    src: PropTypes.string.isRequired,
+    alt: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
   };
 
@@ -32,9 +33,13 @@ class Modal extends Component {
   };
 
   render() {
+    const { src, alt } = this.props;
+
     return createPortal(
       <div className={styles.backdrop} onClick={this.handleBackdrop}>
-        <div className={styles.modal}>{this.props.children}</div>
+        <div className={styles.modal}>
+          <img src={src} alt={alt} />
+        </div>
       </div>,
       modalRoot
     );

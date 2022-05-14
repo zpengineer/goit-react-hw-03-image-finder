@@ -4,7 +4,7 @@ import styles from './Loader.module.css';
 const Loader = () => {
   return (
     <div className={styles.loader}>
-      <Bars heigth="50" width="50" ariaLabel="loading-indicator" color="grey" />
+      <Bars heigth="30" width="50" ariaLabel="loading-indicator" color="grey" />
     </div>
   );
 };
